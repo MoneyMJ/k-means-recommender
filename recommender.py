@@ -42,12 +42,23 @@ print(ratings.head())
 
 
 
-sums = []
-for genre in range(len(all_genres)):
-    for user in range(1, ratings['userId'].max() + 1):
-        for i in range(len(ratings.index)):
-            if[user == ratings['userId'][i] and all_genres[genre] in ratings['genres'][i]]:
-                sums[genre] += ratings['rating'][i]
+# sums = []
+# for j in range(len(all_genres)):
+#     for k in range(ratings['userId'].max()):
+#         sums.append(0)
+
+sums = [[0 for k in range(ratings['userId'].max())] for j in range(len(all_genres))]
     
+# for genre in range(len(all_genres)):
+#     for user in range(1, ratings['userId'].max() + 1):
+#         for i in range(len(ratings.index)):
+#             if[user == ratings['userId'][i] and all_genres[genre] in ratings['genres'][i]]:
+#                 sums[genre] += ratings['rating'][i]
+    
+for genre in range(len(all_genres)):
+    for i in range(len(ratings.index)):
+        if(all_genres[genre] in ratings['genres'][i]):
+            sums[genre][ratings['userId'][i]-1] += ratings['rating'][i]
+
     
 print(sums)
