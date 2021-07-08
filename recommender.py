@@ -80,7 +80,7 @@ print(averages)
 names = []
 
 avgs = pd.DataFrame(averages)
-avgs.transpose()
+# avgs.transpose()
 count = 0
 for i in range(ratings['userId'].max()):
     names.append("User" + str(i+1))
@@ -89,5 +89,6 @@ for i in range(ratings['userId'].max()):
     #avgs.columns[count] = ["User" +'{}'.format(count)]
 avgs.columns = names
 avgs.set_index([pd.Index(all_genres)], inplace=True)
+avgs = avgs.transpose()
 
 print(avgs.head())
