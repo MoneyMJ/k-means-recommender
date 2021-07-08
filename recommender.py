@@ -15,7 +15,7 @@ movies = pd.read_csv("ml-latest-small/movies.csv")
 
 movies['genres'] = movies.genres.str.split('|')
 ratings = pd.merge(movies, ratings)
-print(movies.head())
+#print(movies.head())
 
 all_genres = []
 
@@ -48,6 +48,7 @@ print(ratings.head())
 #         sums.append(0)
 
 sums = [[0 for k in range(ratings['userId'].max())] for j in range(len(all_genres))]
+cnt = [[0 for k in range(ratings['userId'].max())] for j in range(len(all_genres))]
     
 # for genre in range(len(all_genres)):
 #     for user in range(1, ratings['userId'].max() + 1):
@@ -59,6 +60,19 @@ for genre in range(len(all_genres)):
     for i in range(len(ratings.index)):
         if(all_genres[genre] in ratings['genres'][i]):
             sums[genre][ratings['userId'][i]-1] += ratings['rating'][i]
+            cnt[genre][ratings['userId'][i] - 1] += 1
 
     
 print(sums)
+print (cnt)
+
+averages = [[0 for k in range(ratings['userId'].max())] for j in range(len(all_genres))]
+
+for j in range(len(all_genres)):
+    for k in range(ratings['userId'].max()):
+        if(cnt[j][k] != 0):
+            averages[j][k] = round(sums[j][k]/cnt[j][k], 2)
+        else:
+            averages[j][k] = 0
+
+print(averages)
