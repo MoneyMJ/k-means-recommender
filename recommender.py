@@ -76,3 +76,18 @@ for j in range(len(all_genres)):
             averages[j][k] = 0
 
 print(averages)
+
+names = []
+
+avgs = pd.DataFrame(averages)
+avgs.transpose()
+count = 0
+for i in range(ratings['userId'].max()):
+    names.append("User" + str(i+1))
+    # avgs.columns[i] = "User" + str(i+1)
+    #count += 1
+    #avgs.columns[count] = ["User" +'{}'.format(count)]
+avgs.columns = names
+avgs.set_index([pd.Index(all_genres)], inplace=True)
+
+print(avgs.head())
