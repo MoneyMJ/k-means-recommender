@@ -1,6 +1,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+from sklearn.cluster import KMeans
 
 ratings = pd.read_csv("ml-latest-small/ratings.csv")
 movies = pd.read_csv("ml-latest-small/movies.csv")
@@ -25,9 +26,9 @@ for i in range(len(movies.index)):
             all_genres.append(genre)
 
 all_genres.remove('(no genres listed)')
-print(all_genres)
+#print(all_genres)
 
-print(ratings.head())
+# print(ratings.head())
 
 # for genre in movies['genres']:
 #     if(genre is in all_genres):
@@ -63,8 +64,8 @@ for genre in range(len(all_genres)):
             cnt[genre][ratings['userId'][i] - 1] += 1
 
     
-print(sums)
-print (cnt)
+# print(sums)
+# print (cnt)
 
 averages = [[0 for k in range(ratings['userId'].max())] for j in range(len(all_genres))]
 
@@ -75,7 +76,7 @@ for j in range(len(all_genres)):
         else:
             averages[j][k] = 0
 
-print(averages)
+# print(averages)
 
 names = []
 
@@ -91,4 +92,57 @@ avgs.columns = names
 avgs.set_index([pd.Index(all_genres)], inplace=True)
 avgs = avgs.transpose()
 
-print(avgs.head())
+# print(avgs.head())
+
+def bias_data(avgs, cutoff):
+    new_data = avgs[(avgs['Comedy'] > cutoff) | (avgs['Sci-Fi'] > cutoff)]
+
+    return new_data 
+
+
+biased_data = bias_data(avgs, 3.5)
+
+biased_data = biased_data[['Comedy', 'Sci-Fi']]
+
+# print(biased_data.head())
+print(biased_data)
+
+# plt.scatter(biased_data['Comedy'],biased_data['Sci-Fi'])
+# plt.xlabel('Komedi')
+# plt.ylabel('Sci-Fi')
+# plt.title('Scatter')
+# plt.show()
+
+X=biased_data[['Comedy','Sci-Fi']]
+print(type(X))
+
+""" Optimal Clusters : Atleast 5"""
+# num_cluster=list(range(1,9))
+# inertias=[]
+# for i in num_cluster:
+#     model=KMeans(n_clusters=i)
+#     model.fit(X)
+#     inertias.append(model.inertia_)
+# plt.plot(num_cluster,inertias,'-o')
+#plt.show()
+
+
+def draw_clusters(biased_dataset, predictions, cmap='viridis'):
+    fig = plt.figure(figsize=(8,8))
+    ax = fig.add_subplot(111)
+    plt.xlim(0, 5)
+    plt.ylim(0, 5)
+    # ax.set_xlabel('Avg scifi rating')
+    # ax.set_ylabel('Avg romance rating')
+
+model=KMeans(n_clusters=3)
+predictions=model.fit_predict(X)
+print(X.columns)
+draw_clusters(biased_data,predictions)
+print(predictions)
+plt.show()
+
+
+
+
+
