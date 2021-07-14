@@ -8,7 +8,7 @@ movies = pd.read_csv("ml-latest-small/movies.csv")
 
 
 
-#print(ratings.columns)
+print(ratings.columns)
 
 # userRatings = ratings.pivot_table(index = ['userId'], columns = ['title'], values = 'rating')
 # print(userRatings.head())
@@ -26,7 +26,7 @@ for i in range(len(movies.index)):
             all_genres.append(genre)
 
 all_genres.remove('(no genres listed)')
-#print(all_genres)
+print(all_genres)
 
 # print(ratings.head())
 
@@ -103,15 +103,18 @@ def bias_data(avgs, cutoff):
 biased_data = bias_data(avgs, 3.5)
 
 biased_data = biased_data[['Comedy', 'Sci-Fi']]
+# biased_data['num']=np.arange(len(biased_data))
+# biased_data=biased_data[['num','Comedy','Sci-Fi']]
+# biased_data.set_index('num',inplace=True)
 
 # print(biased_data.head())
 print(biased_data)
 
-# plt.scatter(biased_data['Comedy'],biased_data['Sci-Fi'])
-# plt.xlabel('Komedi')
-# plt.ylabel('Sci-Fi')
-# plt.title('Scatter')
-# plt.show()
+plt.scatter(biased_data['Comedy'],biased_data['Sci-Fi'])
+plt.xlabel('Komedi')
+plt.ylabel('Sci-Fi')
+plt.title('Scatter')
+#plt.show()
 
 X=biased_data[['Comedy','Sci-Fi']]
 print(type(X))
@@ -126,20 +129,25 @@ print(type(X))
 # plt.plot(num_cluster,inertias,'-o')
 #plt.show()
 
-
-def draw_clusters(biased_dataset, predictions, cmap='viridis'):
-    fig = plt.figure(figsize=(8,8))
-    ax = fig.add_subplot(111)
-    plt.xlim(0, 5)
-    plt.ylim(0, 5)
-    # ax.set_xlabel('Avg scifi rating')
-    # ax.set_ylabel('Avg romance rating')
-
-model=KMeans(n_clusters=3)
+model=KMeans(n_clusters=2)
 predictions=model.fit_predict(X)
-print(X.columns)
-draw_clusters(biased_data,predictions)
-print(predictions)
+
+# def draw_clusters(biased_dataset, predictions, cmap='viridis'):
+#     fig = plt.figure(figsize=(8,8))
+#     ax = fig.add_subplot(1,1,1)
+#     plt.xlim(0, 5)
+#     plt.ylim(0, 5)
+#     ax.set_xlabel('Avg scifi rating')
+#     ax.set_ylabel('Avg romance rating')
+
+clustered = pd.concat([biased_data.reset_index(), pd.DataFrame({'group':predictions})], axis=1)
+plt.figure(figsize=(8,8))
+plt.scatter(clustered['Comedy'], clustered['Sci-Fi'], c=clustered['group'], s=20)
+
+
+# print(X.columns)
+# draw_clusters(biased_data,predictions)
+# print(predictions)
 plt.show()
 
 
