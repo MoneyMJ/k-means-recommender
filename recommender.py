@@ -18,7 +18,9 @@ ratings_unabridged = ratings
 movies['genres'] = movies.genres.str.split('|')
 ratings = pd.merge(movies, ratings)
 #print(movies.head())
-# print(ratings)
+
+
+print(ratings_unabridged)
 
 all_genres = []
 
@@ -104,6 +106,8 @@ def bias_data(avgs, cutoff):
 
 biased_data = bias_data(avgs, 3.5)
 
+all_data = biased_data
+
 biased_data = biased_data[['Comedy', 'Sci-Fi']]
 # biased_data['num']=np.arange(len(biased_data))
 # biased_data=biased_data[['num','Comedy','Sci-Fi']]
@@ -112,13 +116,15 @@ biased_data = biased_data[['Comedy', 'Sci-Fi']]
 # print(biased_data.head())
 # print(biased_data)
 
-plt.scatter(biased_data['Comedy'],biased_data['Sci-Fi'])
+# plt.scatter(biased_data['Comedy'],biased_data['Sci-Fi'])
+# plt.scatter(avgs[all_genres])
 plt.xlabel('Komedi')
 plt.ylabel('Sci-Fi')
 plt.title('Scatter')
-#plt.show()
+# plt.show()
 
-X=biased_data[['Comedy','Sci-Fi']]
+# X=biased_data[['Comedy','Sci-Fi']]
+X = avgs
 # print(type(X))
 
 """ Optimal Clusters : Atleast 5"""
@@ -131,9 +137,9 @@ X=biased_data[['Comedy','Sci-Fi']]
 # plt.plot(num_cluster,inertias,'-o')
 #plt.show()
 
-model=KMeans(n_clusters=19)
+model=KMeans(n_clusters=19,random_state=1)
 predictions=model.fit_predict(X)
-# print(len(predictions))
+print(len(predictions))
 
 
 # def draw_clusters(biased_dataset, predictions, cmap='viridis'):
@@ -144,8 +150,8 @@ predictions=model.fit_predict(X)
 #     ax.set_xlabel('Avg scifi rating')
 #     ax.set_ylabel('Avg romance rating')
 
-clustered = pd.concat([biased_data.reset_index(), pd.DataFrame({'group':predictions})], axis=1)
-# print(clustered)
+clustered = pd.concat([avgs.reset_index(), pd.DataFrame({'group':predictions})], axis=1)
+
 plt.figure(figsize=(8,8))
 plt.scatter(clustered['Comedy'], clustered['Sci-Fi'], c=clustered['group'], s=20)
 
@@ -159,41 +165,53 @@ user_ratings = pd.merge(ratings_unabridged,movies[['movieId','title']],on='movie
 user_pivot=pd.pivot_table(user_ratings, index='userId', columns='title', values='rating')
 # print(user_pivot.head())
 
-
-
-
-
-
-# def get_most_rated_movies(user_movie_ratings, max_number_of_movies):
-#     # 1- Count
-#     user_movie_ratings = user_movie_ratings.append(user_movie_ratings.count(), ignore_index=True)
-#     # 2- sort
-#     user_movie_ratings_sorted = user_movie_ratings.sort_values(len(user_movie_ratings)-1, axis=1, ascending=False)
-#     user_movie_ratings_sorted = user_movie_ratings_sorted.drop(user_movie_ratings_sorted.tail(1).index)
-#     # 3- slice
-#     most_rated_movies = user_movie_ratings_sorted.iloc[:, :max_number_of_movies]
-#     return most_rated_movies
-
-# # Define the sorting by rating function
-# def sort_by_rating_density(user_movie_ratings, n_movies, n_users):
-#     most_rated_movies = get_most_rated_movies(user_movie_ratings, n_movies)
-#     most_rated_movies = get_users_who_rate_the_most(most_rated_movies, n_users)
-#     return most_rated_movies
-    
 # Define Function to get the most rated movies
 # list=[]
 # for i in range(len(20)):
+
+clustered = clustered.set_index('index')
+print(clustered)
+
 clusters = clustered.groupby('group')
-print(clusters.groups)
+dict = {}
+dict = clusters.groups
+# print(dict)
+arr_clusters = []
 
-arr_clusters = [[]]
-for i in range(0, clusters.ngroups - 1):
-    arr_clusters[i].append(clusters.get_group(str(i)))
+# print(type(dict[0]))
+for i in range(19):
+    
+    arr_clusters.append(list(dict[i].values))
 
+# print(arr_clusters[0])
+
+# print(type(arr_clusters[0][0]))
+
+# for i in range(0, clusters.ngroups):
+#     col = []
+#     for j in 
+#     col.append(clusters.get_group(str(i)))
+    
 print(arr_clusters)
+# print(clusters.get_group(1))
+# for i in range(0,19):
+#     arr_clusters[i] = clusters.get_group(i)['index']
 
+# print(arr_clusters.head())
 
+# print(dict)
 
+# print(avgs)
 
+test_user = 18
+test_movieID = 59784
+test_rating = 4.0
 
-# clusters = [[0 for k in range(ratings['userId'].max())] for j in range(len(all_genres))]
+list=[]
+# print(type(ratings_unabridged['rating'][(ratings_unabridged['userId']==18) & (ratings_unabridged['movieId']==test_movieID)]))
+# for i in range(len(arr_clusters)):
+#     for j in arr_clusters[i]:
+#         user =  int(j[4:])
+#         # print(user)
+#         abcd = ratings_unabridged[(ratings_unabridged['userId']==user) & (ratings_unabridged['movieId']==test_movieID)]
+#         print(abcd)
