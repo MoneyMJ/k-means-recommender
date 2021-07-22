@@ -207,11 +207,64 @@ test_user = 18
 test_movieID = 59784
 test_rating = 4.0
 
-list=[]
+cluster_avg = []
 # print(type(ratings_unabridged['rating'][(ratings_unabridged['userId']==18) & (ratings_unabridged['movieId']==test_movieID)]))
-# for i in range(len(arr_clusters)):
-#     for j in arr_clusters[i]:
-#         user =  int(j[4:])
-#         # print(user)
-#         abcd = ratings_unabridged[(ratings_unabridged['userId']==user) & (ratings_unabridged['movieId']==test_movieID)]
-#         print(abcd)
+
+for i in range(len(arr_clusters)):
+    sum = 0
+    length = 0
+    for j in arr_clusters[i]:
+        user =  int(j[4:])
+        # print(user)
+        abcd = ratings_unabridged[(ratings_unabridged['userId']==user) & (ratings_unabridged['movieId']==test_movieID)]
+        if(abcd.empty == False):
+            sum += int(abcd['rating'].values)
+            length += 1
+    if(length):
+        cluster_avg.append(round(sum/length,2))
+    else:
+        cluster_avg.append(0)
+
+print(cluster_avg)
+
+diff = 5
+for i in range(len(cluster_avg)):
+    if(abs(test_rating - cluster_avg[i]) < diff):
+        optimal_cluster_index = i
+        diff = abs(test_rating - cluster_avg[i])
+
+print(optimal_cluster_index)
+
+DF_List = list()
+
+for i in arr_clusters[optimal_cluster_index]:
+    user = int(i[4:])
+    DF_List.append(ratings_unabridged[(ratings_unabridged['userId'] == user)])
+
+print(DF_List)
+
+optimal_cluster_data = pd.DataFrame()
+
+for i in DF_List:
+    optimal_cluster_data = optimal_cluster_data.append(i)
+
+# print(optimal_cluster_data)
+
+
+
+# optimal_cluster_data = optimal_cluster_data[optimal_cluster_data.groupby('movieId').userId.count() > 10]
+optimal_cluster_data['counts'] = optimal_cluster_data.groupby(['movieId'])['userId'].transform('count')
+print(optimal_cluster_data['counts'].max())
+optimal_cluster_data = optimal_cluster_data.groupby('movieId').mean().sort_values(by=['counts', 'rating'], ascending=False)
+
+# optimal_cluster_data = optimal_cluster_data[optimal_cluster_data.mean().sort_values(by=['rating'], ascending=False)]
+print(optimal_cluster_data.head())
+
+result_movie_ids = list(optimal_cluster_data.head().index)
+# print(result_movie_ids)
+
+
+
+#Final Result
+for i in result_movie_ids:
+    print(list(movies['title'][movies['movieId'] == i])[0])
